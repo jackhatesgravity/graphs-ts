@@ -6,26 +6,20 @@ require('log-timestamp');
 // Basically just trying to put a limit of some kind on the attribute values.
 // Come back and do this better, it's deliberate loose for now.
 interface Attribute {
-    [key: string]: any;
+    [key: string]: string | number | boolean;
 }
 
 interface GraphInterface {
     add_node(node: Node, attrs?: Attribute): void;
-
     remove_node(node: Node): void;
-
-    add_edge(u: Node, v: Node, attrs?: Attribute): void;
-
-    remove_edge(u: Node, v: Node): void;
-
+    add_edge(node: Node, other: Node, attrs?: Attribute): void;
+    remove_edge(node: Node, other: Node): void;
     has_node(node: Node): boolean;
-
     print_nodes(): void;
-
     print_edges(): void;
 }
 
-class Graph implements GraphInterface {
+export class Graph implements GraphInterface {
 
     private _node: Map<Node, Attribute>;
     private _adj: Map<Node, Map<Node, Attribute>>;
@@ -122,25 +116,4 @@ class Graph implements GraphInterface {
         console.debug("Printing all edges in graph: " + entries.join(', ') + ".");
     }
 }
-
-const graph = new Graph();
-
-const node1 = new Node("node_1");
-const node2 = new Node("node_2");
-const node3 = new Node("node_3");
-
-graph.add_node(node1);
-graph.add_node(node2);
-graph.add_node(node3);
-
-graph.add_edge(node1, node2, {"weight": 10});
-graph.add_edge(node1, node3, {"weight": 9});
-graph.add_edge(node2, node3, {"weight": 13});
-graph.print_edges();
-
-graph.remove_edge(node2, node3);
-graph.print_edges();
-
-graph.add_edge(node2, node3, {"weight": "14"});
-graph.print_edges();
 
