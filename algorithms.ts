@@ -2,7 +2,7 @@ import {Attribute, Graph} from "./graph";
 import {Node} from "./node";
 import {Queue} from "./queue";
 
-export const breadth_first_search = (graph: Graph, source: Node, sink: Node): void => {
+export const bf_search = (graph: Graph, source: Node): void => {
     const nodes: Map<Node, Attribute> = graph.get_nodes(); // Please be a reference...
     const edges: Map<Node, Map<Node, Attribute>> = graph.get_edges(); // P l e a s e .
     graph.set_node_attrs(source, {"colour": "grey", "d": 0, "pi": null});
@@ -10,18 +10,18 @@ export const breadth_first_search = (graph: Graph, source: Node, sink: Node): vo
     frontier.put(source);
 
     while (!frontier.empty()) {
-        const current: Node = frontier.get();
-        const neighbours: Map<Node, Attribute> = edges.get(current);
+        const current: Node = <Node>frontier.get();
+        const neighbours: Map<Node, Attribute> = <Map<Node, Attribute>>edges.get(current);
 
         if (neighbours) {
-            for (const [neighbour, attrs] of neighbours) {
+            for (const [neighbour, _] of neighbours) {
                 const neighbour_node = neighbour;
                 const neighbour_attrs = nodes.get(neighbour_node);
 
                 if (neighbour_attrs && neighbour_attrs["colour"] === "white") {
                     graph.set_node_attrs(neighbour_node, {
                         "colour": "grey",
-                        "d": (nodes.get(current)?.["d"] + 1) || 0,
+                        "d": nodes.get(current)?.["d"] + 1 || 0,
                         "pi": current
                     });
                     frontier.put(neighbour_node);

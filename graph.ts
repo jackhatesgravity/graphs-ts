@@ -6,7 +6,7 @@ require('log-timestamp');
 // Basically just trying to put a limit of some kind on the attribute values.
 // Come back and do this better, it's deliberate loose for now.
 export interface Attribute {
-    [key: string]: string | number | boolean | null;
+    [key: string]: string | number | boolean | null | Node;
 }
 
 interface GraphInterface {

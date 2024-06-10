@@ -1,6 +1,6 @@
 import {Graph} from "./graph";
 import {Node} from "./node";
-import {bf_search, depth_first_search, reconstruct_path} from "./algorithms";
+import {bf_search, reconstruct_path} from "./algorithms";
 
 const graph: Graph = new Graph();
 
@@ -44,25 +44,16 @@ for (const [char1, char2] of edges) {
 }
 
 // This is much nicer, but that lingering 'undefined' is going to kill me.
+// Updated thoughts on that, I think so long as we assert something will not be undefined, it feels spiritually sound.
 const source_node: Node | undefined = graph.get_node("s");
 const sink_node: Node | undefined = graph.get_node("z");
 
-// Driver code for BFS.
 // I think TS uses pass-by-ref, so I should be able to modify nodes externally and see it reflected in the graph.
 for (const node of nodes) {
     graph.set_node_attrs(node, {"colour": "white", "d": Number.MAX_SAFE_INTEGER, "pi": null});
 }
-bf_search(graph, <Node>source_node, <Node>sink_node);
+bf_search(graph, <Node>source_node);
 let shortest_path: Node[] = [];
 reconstruct_path(graph, <Node>source_node, <Node>sink_node, shortest_path);
 // These undefined's are going to be the death of me.
-console.log("BFS: " + JSON.stringify(shortest_path));
-
-// Driver code for DFS.
-for (const node of nodes) {
-    graph.set_node_attrs(node, {"colour": "white", "d": Number.MAX_SAFE_INTEGER, "pi": null});
-}
-depth_first_search(graph, <Node>source_node, <Node>sink_node);
-shortest_path = [];
-reconstruct_path(graph, <Node>source_node, <Node>sink_node, shortest_path);
-console.log("DFS: " + JSON.stringify(shortest_path));
+console.log(shortest_path);
