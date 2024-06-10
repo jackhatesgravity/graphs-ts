@@ -11,24 +11,36 @@ export interface Attribute {
 
 interface GraphInterface {
     add_node(node: Node, attrs?: Attribute): void;
+
     remove_node(node: Node): void;
+
     add_edge(node: Node, other: Node, attrs?: Attribute): void;
+
     remove_edge(node: Node, other: Node): void;
+
     has_node(node: Node): boolean;
+
     get_node(id: string): Node | undefined;
+
     get_node_attrs(node: Node): Attribute | undefined;
+
     get_nodes(): Map<Node, Attribute>;
+
     print_node(node: Node): void;
+
     print_nodes(): void;
+
     print_edges(): void;
+
     set_node_attrs(node: Node, attrs: Attribute): void;
+
     clear_node_attrs(node: Node): void;
 }
 
 export class Graph implements GraphInterface {
 
-    private _node: Map<Node, Attribute>;
-    private _adj: Map<Node, Map<Node, Attribute>>;
+    private readonly _node: Map<Node, Attribute>;
+    private readonly _adj: Map<Node, Map<Node, Attribute>>;
 
     constructor() {
         this._node = new Map();
@@ -46,7 +58,7 @@ export class Graph implements GraphInterface {
             this._adj.set(node, new Map());
         } else {
             console.warn(`Node ${node.get_id()} already in graph. Updating attributes.`)
-            const existing: Attribute = this._node.get(node); // The fuck is going on here?
+            const existing: Attribute = <Attribute>this._node.get(node);
             Object.assign(existing, attrs);
         }
         // console.debug(`Successfully added node ${node.get_id()}.`);

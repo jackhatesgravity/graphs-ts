@@ -1,7 +1,10 @@
 interface QueueInterface<T> {
     count(): number;
+
     empty(): boolean;
+
     put(node: T): number;
+
     get(): T | undefined;
 }
 
