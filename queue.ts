@@ -24,7 +24,7 @@ export class Queue<T> implements QueueInterface<T> {
 
     // Add an element to the top of the Stack
     public put(node: T): number {
-        return this._queue.push(node);
+        return this._queue.unshift(node);
     }
 
     // Removes and returns the top element of the Stack.

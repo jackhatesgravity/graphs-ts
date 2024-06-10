@@ -24,7 +24,7 @@ export class Stack<T> implements StackInterface<T> {
 
     // Add an element to the top of the Stack
     public put(node: T): number {
-        return this._stack.unshift(node);
+        return this._stack.push(node);
     }
 
     // Removes and returns the top element of the Stack.
