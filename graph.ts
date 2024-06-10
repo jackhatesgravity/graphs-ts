@@ -1,41 +1,6 @@
-import {Stack} from './stack';
-import {Queue} from './queue';
+import {Node} from "./node";
 
 require('log-timestamp');
-
-class Node {
-    private readonly _id: string;
-
-    constructor(id: string) {
-        this._id = id
-    }
-
-    get_id() {
-        return this._id;
-    }
-}
-
-class Edge {
-    private _attrs: Record<string, any>;
-
-    constructor(attrs: Record<string, any> = {}) {
-        this._attrs = attrs;
-    }
-
-    get_attrs() {
-        return this._attrs;
-    }
-
-    // Main attribute I care about is 'weight' but I'm following the NetworkX code pretty closely to allow expansion.
-    update_attrs(attrs: Record<string, any>) {
-        Object.assign(this._attrs, attrs);
-    }
-
-    // Should we return anything here? And should we add single attr removal?
-    clear_attrs(): void {
-        this._attrs = null;
-    }
-}
 
 // Learning experience, but I think this is a reasonably good start.
 // Basically just trying to put a limit of some kind on the attribute values.
@@ -45,23 +10,25 @@ interface Attribute {
 }
 
 interface GraphInterface {
-    add_node(node: Node, attrs?: Record<string, string>): void;
+    add_node(node: Node, attrs?: Attribute): void;
 
     remove_node(node: Node): void;
 
-    add_edge(u: Node, v: Node, attrs?: Record<string, any>): void;
+    add_edge(u: Node, v: Node, attrs?: Attribute): void;
 
     remove_edge(u: Node, v: Node): void;
 
     has_node(node: Node): boolean;
 
-    print_node_ids(): void;
+    print_nodes(): void;
+
+    print_edges(): void;
 }
 
 class Graph implements GraphInterface {
 
     private _node: Map<Node, Attribute>;
-    private _adj: Map<Node, Map<Node, Edge>>;
+    private _adj: Map<Node, Map<Node, Attribute>>;
 
     constructor() {
         this._node = new Map();
@@ -104,24 +71,55 @@ class Graph implements GraphInterface {
         return this._node.size;
     }
 
-    add_edge(node: Node, other: Node): Edge {
-        throw new Error('Method not implemented.');
-    }
-
-    remove_edge(node: Node, other: Node): Edge {
-        throw new Error('Method not implemented.');
-    }
-
     has_node(node: Node): boolean {
-        throw new Error('Method not implemented.');
+        return this._node.has(node);
     }
 
-    print_node_ids(): void {
+    print_nodes(): void {
         const entries: string[] = [];
         this._node.forEach((element: Attribute, node: Node) => {
             entries.push(`id: ${node.get_id()}, attrs: ${JSON.stringify(element)}`);
         });
         console.debug("Printing all nodes in graph: " + entries.join(', ') + ".");
+    }
+
+    // Up for debate whether we allow node creation here. Allow for now.
+    add_edge(node: Node, other: Node, attrs?: Attribute): void {
+        if (!this.has_node(node)) {
+            console.warn(`Node ${node.get_id()} not in graph. Adding...`);
+            this.add_node(node);
+        }
+        if (!this.has_node(other)) {
+            console.warn(`Node ${other.get_id()} not in graph. Adding...`);
+            this.add_node(other);
+        }
+
+        this._adj.get(node)!.set(other, attrs);
+        this._adj.get(other)!.set(node, attrs);
+
+        console.debug(`Successfully added edge between ${node.get_id()} and ${other.get_id()}.`);
+    }
+
+    remove_edge(node: Node, other: Node): void {
+        if (this._adj.get(node)?.has(other)) {
+            this._adj.get(node)!.delete(other);
+        }
+        if (node !== other && this._adj.get(other)?.has(node)) {
+            this._adj.get(other)!.delete(node);
+        } else {
+            throw new Error("Edge is not in the graph!");
+        }
+        console.debug(`Successfully removed edge between ${node.get_id()} and ${other.get_id()}!`);
+    }
+
+    print_edges(): void {
+        const entries: string[] = [];
+        this._adj.forEach((adjMap: Map<Node, Attribute>, node: Node) => {
+            adjMap.forEach((attrs: Attribute, neighbor: Node) => {
+                entries.push(`edge: ${node.get_id()} - ${neighbor.get_id()}, attrs: ${JSON.stringify(attrs)}`);
+            });
+        });
+        console.debug("Printing all edges in graph: " + entries.join(', ') + ".");
     }
 }
 
@@ -131,14 +129,18 @@ const node1 = new Node("node_1");
 const node2 = new Node("node_2");
 const node3 = new Node("node_3");
 
-graph.add_node(node1, {"colour": "red", "size": 10});
-graph.add_node(node2, {"colour": "blue", "shape": "circle"});
-graph.add_node(node3, {"colour": "yellow", "line": "dotted"});
+graph.add_node(node1);
+graph.add_node(node2);
+graph.add_node(node3);
 
-graph.remove_node(node1)
+graph.add_edge(node1, node2, {"weight": 10});
+graph.add_edge(node1, node3, {"weight": 9});
+graph.add_edge(node2, node3, {"weight": 13});
+graph.print_edges();
 
-graph.add_node(node1, {"colour": "red"})
-graph.add_node(node1, {"size": 10})
-graph.add_node(node1, {"colour": "green"})
+graph.remove_edge(node2, node3);
+graph.print_edges();
 
+graph.add_edge(node2, node3, {"weight": "14"});
+graph.print_edges();
 
