@@ -5,7 +5,7 @@ interface QueueInterface<T> {
     get(): T | undefined;
 }
 
-class Queue<T> implements QueueInterface<T> {
+export class Queue<T> implements QueueInterface<T> {
     private _queue: T[];
 
     constructor() {

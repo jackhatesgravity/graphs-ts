@@ -5,7 +5,7 @@ interface StackInterface<T> {
     get(): T | undefined;
 }
 
-class Stack<T> implements StackInterface<T> {
+export class Stack<T> implements StackInterface<T> {
     private _stack: T[];
 
     constructor() {
